@@ -1,31 +1,35 @@
 name: CI
 on: [workflow_dispatch]
 
-# 在全局范围开启 Node.js 24 强制选项
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  GRADLE_OPTS: -Xmx4g
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4 # 即使是 v4，设置了环境变量后也会用 Node 24 运行
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
-      - name: Setup JDK 17
+      - name: Setup JDK 21  # <--- 这里改为 21
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'microsoft'
+          cache: 'gradle'
 
       - name: Make gradlew executable
         run: chmod +x gradlew
 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew build --stacktrace
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
+        if: success()
         with:
           name: Voxy-1.20.1-Jar
           path: build/libs/!(*-sources|*-dev).jar
