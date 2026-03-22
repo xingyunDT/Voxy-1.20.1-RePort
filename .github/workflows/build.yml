@@ -31,5 +31,6 @@ jobs:
         uses: actions/upload-artifact@v4
         if: success()
         with:
-          name: Voxy-1.20.1-Jar
-          path: build/libs/!(*-sources|*-dev).jar
+          name: Voxy-1.20.1-Build-Output
+          # 修改这里：直接抓取所有 jar 文件，避免复杂的排除语法出错
+          path: build/libs/*.jar
